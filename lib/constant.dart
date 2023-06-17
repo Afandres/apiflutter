@@ -1,6 +1,9 @@
 // ----- STRINGS ------
 import 'package:flutter/material.dart';
 
+//ingresar su direccion ip de internet en la ruta
+//              |          ||         |
+//              |          ||         |
 const baseURL = 'http://127.0.0.1:8000/api/sigac';
 const loginURL = baseURL + '/login';
 const registerURL = '$baseURL/register';
@@ -8,8 +11,7 @@ const logoutURL = baseURL + '/logout';
 const userURL = baseURL + '/user';
 const attendanceURL = baseURL + '/attendances';
 const apprenticeURL = baseURL + '/apprentices/{courseCode}';
-const instructorprogramURL =
-    baseURL + '/instructor_program/list/{instructor}/{date}/{time}';
+const instructorprogramURL = baseURL + '/instructor_program/list/';
 
 // ----- Errors -----
 const serverError = 'Server error';

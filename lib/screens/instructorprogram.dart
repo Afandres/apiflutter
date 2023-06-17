@@ -1,7 +1,7 @@
 ﻿import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:api/constant.dart';
 
 class InstructorProgram extends StatefulWidget {
   final String instructorId;
@@ -13,8 +13,7 @@ class InstructorProgram extends StatefulWidget {
 }
 
 class _InstructorProgramState extends State<InstructorProgram> {
-  String apiUrl =
-      'http://192.168.100.159:8000/api/sigac/instructor_program/list/';
+  String apiUrl = instructorprogramURL;
 
   Future<List<dynamic>> fetchData() async {
     DateTime now = DateTime.now();
@@ -38,7 +37,7 @@ class _InstructorProgramState extends State<InstructorProgram> {
 
   Future<void> takeAttendance(
       int apprenticeId, String state, int programId) async {
-    String apiUrl = 'http://192.168.100.159:8000/api/sigac/attendances';
+    String apiUrl = attendanceURL;
     Map<String, String> headers = {'Content-Type': 'application/json'};
     Map<String, dynamic> body = {
       'person_id': apprenticeId.toString(),
