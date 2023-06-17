@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 //ingresar su direccion ip de internet en la ruta
 //              |          ||         |
 //              |          ||         |
-const baseURL = 'http://127.0.0.1:8000/api/sigac';
+const baseURL = 'http://192.168.100.159:8000/api/sigac';
 const loginURL = baseURL + '/login';
 const registerURL = '$baseURL/register';
 const logoutURL = baseURL + '/logout';

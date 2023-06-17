@@ -4,14 +4,13 @@ class User {
   String? image;
   String? email;
   String? token;
-  String? personId;
+
   User({
     this.id,
     this.name,
     this.image,
     this.email,
     this.token,
-    this.personId,
   });
 
   // Función para convertir datos JSON a un modelo de usuario
@@ -22,8 +21,7 @@ class User {
       image: json['user']['image'],
       email: json['user']['email'],
       token: json['token'],
-      personId: json['user']
-          ['person_id'], // Asignar el valor de person_id al campo personId
+      // Asignar el valor de person_id al campo personId
     );
   }
 }
