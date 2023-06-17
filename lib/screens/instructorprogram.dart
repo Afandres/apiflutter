@@ -2,6 +2,23 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:api/constant.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+class Apprentice {
+  final int id;
+  final String firstName;
+  final String firstLastName;
+  final String secondLastName;
+  bool isAttended;
+
+  Apprentice({
+    required this.id,
+    required this.firstName,
+    required this.firstLastName,
+    required this.secondLastName,
+    this.isAttended = false,
+  });
+}
 
 class InstructorProgram extends StatefulWidget {
   final String instructorId;
@@ -54,105 +71,155 @@ class _InstructorProgramState extends State<InstructorProgram> {
     print('Respuesta recibida: ${response.body}');
 
     if (response.statusCode == 200) {
+      setState(() {
+        // Actualizar el estado de la asistencia del aprendiz
+        for (var program in _programs) {
+          for (var apprentice in program['course']['apprentices']) {
+            if (apprentice['person_id'] == apprenticeId) {
+              apprentice['isAttended'] = true;
+              break;
+            }
+          }
+        }
+      });
+
       print('Asistencia tomada con éxito');
     } else {
       print('Error al tomar la asistencia');
     }
   }
 
+  List<dynamic> _programs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData().then((data) {
+      setState(() {
+        _programs = data;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: fetchData(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
+    if (_programs.isEmpty) {
+      return CircularProgressIndicator();
+    } else {
+      return ListView.builder(
+        itemCount: _programs.length,
+        itemBuilder: (context, index) {
+          var program = _programs[index];
+          var apprentices = program['course']['apprentices'];
+          var programId = program['id'];
+
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  'Listado de Aprendices',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    program['course']['program']['name'],
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: snapshot.data!.length,
-                  separatorBuilder: (context, index) => Divider(),
-                  itemBuilder: (context, index) {
-                    var item = snapshot.data![index];
-                    var apprentices = item['course']['apprentices'];
-                    var programId =
-                        item['id']; // Obtener el ID del programa aquí
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListView.separated(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: apprentices.length,
-                          separatorBuilder: (context, index) => Divider(),
-                          itemBuilder: (context, index) {
-                            var apprentice = apprentices[index];
-                            var person = apprentice['person'];
-                            var apprenticeId = apprentice['person_id'];
-                            var firstName = person['first_name'];
-                            var firstLastName = person['first_last_name'];
-                            var secondLastName = person['second_last_name'];
-
-                            var fullName =
-                                '$firstName $firstLastName $secondLastName';
-
-                            return ListTile(
-                              leading: Icon(Icons.person),
-                              title: Text(fullName),
-                              subtitle: Text('Aprendiz'),
-                              trailing: PopupMenuButton<String>(
-                                itemBuilder: (context) => [
-                                  PopupMenuItem<String>(
-                                    value: 'F',
-                                    child: Text('F'),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: 'MF',
-                                    child: Text('MF'),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: 'FJ',
-                                    child: Text('FJ'),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: 'FI',
-                                    child: Text('FI'),
-                                  ),
-                                ],
-                                onSelected: (value) {
-                                  takeAttendance(
-                                      apprenticeId, value, programId);
-                                },
-                                child: Icon(Icons.more_vert),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    program['course']['code'].toString(),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    program['environment']['name'],
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: apprentices.length,
+                itemBuilder: (context, index) {
+                  var apprentice = apprentices[index];
+                  var person = apprentice['person'];
+                  var apprenticeId = apprentice['person_id'];
+                  var firstName = person['first_name'];
+                  var firstLastName = person['first_last_name'];
+                  var secondLastName = person['second_last_name'];
+
+                  var apprenticeObj = Apprentice(
+                    id: apprenticeId,
+                    firstName: firstName,
+                    firstLastName: firstLastName,
+                    secondLastName: secondLastName,
+                    isAttended: apprentice['isAttended'] ?? false,
+                  );
+
+                  var fullName = '$firstName $firstLastName $secondLastName';
+
+                  return ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(
+                      fullName,
+                      style: TextStyle(
+                        color: apprenticeObj.isAttended
+                            ? Colors.green
+                            : Colors.black,
+                        fontWeight: apprenticeObj.isAttended
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    subtitle: Text('Aprendiz'),
+                    trailing: PopupMenuButton<String>(
+                      itemBuilder: (context) => [
+                        PopupMenuItem<String>(
+                          value: 'P',
+                          child: Text('Presente'),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'MF',
+                          child: Text('Media Falla'),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'FJ',
+                          child: Text('Falla Justificada'),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'FI',
+                          child: Text('Falla Injustificada'),
+                        ),
+                      ],
+                      onSelected: (value) {
+                        takeAttendance(apprenticeId, value, programId);
+                      },
+                      child: Icon(FontAwesomeIcons.userPen),
+                    ),
+                  );
+                },
+              ),
+              Divider(),
             ],
           );
-        } else if (snapshot.hasError) {
-          print('Error: ${snapshot.error}');
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return CircularProgressIndicator();
-        }
-      },
-    );
+        },
+      );
+    }
   }
 }

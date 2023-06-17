@@ -53,20 +53,21 @@ class _LoginState extends State<Login> {
           padding: EdgeInsets.all(32),
           children: [
             TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                controller: txtEmail,
-                validator: (val) =>
-                    val!.isEmpty ? 'Invalid email address' : null,
-                decoration: kInputDecoration('Email')),
+              keyboardType: TextInputType.emailAddress,
+              controller: txtEmail,
+              validator: (val) => val!.isEmpty ? 'Invalid email address' : null,
+              decoration: kInputDecoration('Email'),
+            ),
             SizedBox(
               height: 10,
             ),
             TextFormField(
-                controller: txtPassword,
-                obscureText: true,
-                validator: (val) =>
-                    val!.length < 6 ? 'Required at least 6 chars' : null,
-                decoration: kInputDecoration('Password')),
+              controller: txtPassword,
+              obscureText: true,
+              validator: (val) =>
+                  val!.length < 6 ? 'Required at least 6 chars' : null,
+              decoration: kInputDecoration('Password'),
+            ),
             SizedBox(
               height: 10,
             ),
@@ -89,7 +90,7 @@ class _LoginState extends State<Login> {
               Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => Register()),
                   (route) => false);
-            })
+            }),
           ],
         ),
       ),
