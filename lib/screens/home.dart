@@ -3,6 +3,8 @@ import 'package:api/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'login.dart';
+import 'package:api/models/api_response.dart';
+import 'package:api/models/user.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -12,7 +14,23 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int currentTab = 0;
   final List<Widget> screens = [
-    InstructorProgram(instructorId: '383'),
+    FutureBuilder<ApiResponse<User>>(
+      future: getUserDetail(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasData) {
+          String? instructorId = snapshot.data!.data?.personId.toString();
+          return InstructorProgram(instructorId: instructorId ?? '');
+        } else if (snapshot.hasError) {
+          print(snapshot.error);
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          return Center(
+              child: Text('No se pudo obtener los detalles del usuario'));
+        }
+      },
+    ),
   ];
 
   @override

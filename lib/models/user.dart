@@ -4,6 +4,7 @@ class User {
   String? image;
   String? email;
   String? token;
+  final String? personId;
 
   User({
     this.id,
@@ -11,17 +12,18 @@ class User {
     this.image,
     this.email,
     this.token,
+    this.personId,
   });
 
   // Función para convertir datos JSON a un modelo de usuario
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['user']['id'],
-      name: json['user']['name'],
-      image: json['user']['image'],
-      email: json['user']['email'],
-      token: json['token'],
-      // Asignar el valor de person_id al campo personId
+      id: json['id'],
+      name: json['nickname'],
+      image: null, 
+      email: json['email'],
+      token: null, 
+      personId: json['person_id'].toString(),
     );
   }
 }
