@@ -20,9 +20,9 @@ class User {
     return User(
       id: json['id'],
       name: json['nickname'],
-      image: null, 
+      image: null,
       email: json['email'],
-      token: null, 
+      token: json['token'],
       personId: json['person_id'].toString(),
     );
   }
